@@ -20,6 +20,9 @@ NC='\033[0m' # No Color
 # Função para executar testes do backend
 run_backend_tests() {
     echo -e "${YELLOW}Executando testes do backend...${NC}"
+    
+    apt-get update && apt-get install -y libstdc++6
+
     cd "$BACKEND_DIR" || exit 1
     
     # Verifica se o ambiente virtual existe
@@ -30,10 +33,9 @@ run_backend_tests() {
     
     # Ativa o ambiente virtual
     source venv/bin/activate
-    
     # Instala dependências de teste
     echo "Instalando dependências de teste..."
-    pip install pytest pytest-cov httpx
+    pip install -r requirements.txt && pip install numpy fastapi
 
     # Executa testes unitários
     echo -e "${YELLOW}Executando testes unitários do backend...${NC}"
@@ -68,8 +70,6 @@ run_frontend_tests() {
     echo -e "${YELLOW}Executando testes do frontend...${NC}"
     cd "$FRONTEND_DIR" || exit 1
     
-    # Instala dependências de teste
-    echo "Instalando dependências de teste..."
     npm install --no-save jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom babel-jest @babel/preset-env @babel/preset-react
     
     # Cria arquivo de configuração do Jest se não existir
@@ -114,7 +114,7 @@ EOL
     
     # Executa testes
     echo -e "${YELLOW}Executando testes de componentes...${NC}"
-    npx jest tests/Login.test.js tests/KanbanBoard.test.js tests/RecomendacoesFornecedores.test.js
+    npm test
     FRONTEND_RESULT=$?
     
     # Verifica resultados

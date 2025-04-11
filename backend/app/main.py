@@ -1,5 +1,5 @@
-// Arquivo principal de integração do sistema
-// Este arquivo atualiza o arquivo main.py para integrar todos os componentes
+# Arquivo principal de integração do sistema
+# Este arquivo atualiza o arquivo main.py para integrar todos os componentes
 
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
