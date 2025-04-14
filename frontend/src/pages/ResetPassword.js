@@ -1,9 +1,5 @@
-// Página de login para o Sistema de Gestão de Licitações Governamentais
-// Este componente implementa o formulário de login e autenticação
-
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Box,
@@ -13,10 +9,7 @@ import {
   Paper,
   Alert,
   CircularProgress,
-  InputAdornment,
-  IconButton,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -38,15 +31,14 @@ const StyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(3, 0, 2),
 }));
 
-const Login = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
-  const { signIn } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
-    password: '',
+    email: '',
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -63,12 +55,15 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const result = await signIn(formData.username, formData.password);
-      if (result.success) {
-        navigate('/dashboard');
-      }
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (err) {
-      setError(err.message || 'Erro ao fazer login. Verifique suas credenciais.');
+      setError('Erro ao enviar email de recuperação. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -86,12 +81,18 @@ const Login = () => {
       >
         <StyledPaper elevation={3}>
           <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-            Sistema de Gestão de Licitações
+            Recuperar Senha
           </Typography>
           
           {error && (
             <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
               {error}
+            </Alert>
+          )}
+
+          {success && (
+            <Alert severity="success" sx={{ width: '100%', mb: 2 }}>
+              Email de recuperação enviado com sucesso!
             </Alert>
           )}
 
@@ -107,31 +108,20 @@ const Login = () => {
               autoFocus
               value={formData.username}
               onChange={handleChange}
+              disabled={loading || success}
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              name="password"
-              label="Senha"
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              autoComplete="current-password"
-              value={formData.password}
+              id="email"
+              label="Email"
+              name="email"
+              autoComplete="email"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              disabled={loading || success}
             />
             
             <StyledButton
@@ -139,23 +129,19 @@ const Login = () => {
               fullWidth
               variant="contained"
               color="primary"
-              disabled={loading}
+              disabled={loading || success}
             >
-              {loading ? <CircularProgress size={24} /> : 'Entrar'}
+              {loading ? <CircularProgress size={24} /> : 'Enviar Email'}
             </StyledButton>
 
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-              <Link to="/reset-password" style={{ textDecoration: 'none' }}>
-                <Button color="primary">
-                  Esqueceu a senha?
-                </Button>
-              </Link>
-              <Link to="/signup" style={{ textDecoration: 'none' }}>
-                <Button color="primary">
-                  Criar conta
-                </Button>
-              </Link>
-            </Box>
+            <Button
+              fullWidth
+              color="primary"
+              onClick={() => navigate('/login')}
+              disabled={loading}
+            >
+              Voltar para o Login
+            </Button>
           </StyledForm>
         </StyledPaper>
       </Box>
@@ -163,4 +149,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword; 

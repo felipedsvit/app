@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Efeito para verificar se o usuário já está autenticado ao carregar a aplicação
   useEffect(() => {
@@ -23,6 +24,7 @@ export const AuthProvider = ({ children }) => {
       if (storedToken && storedUser) {
         api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
         setUser(JSON.parse(storedUser));
+        setIsAuthenticated(true);
       }
       
       setLoading(false);
@@ -53,6 +55,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('@LicitaGov:user', JSON.stringify(userResponse.data));
       
       setUser(userResponse.data);
+      setIsAuthenticated(true);
       setLoading(false);
       
       return { success: true };
@@ -71,6 +74,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('@LicitaGov:token');
     localStorage.removeItem('@LicitaGov:user');
     setUser(null);
+    setIsAuthenticated(false);
     api.defaults.headers.common['Authorization'] = '';
   };
 
@@ -92,7 +96,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         error,
-        isAuthenticated: !!user,
+        isAuthenticated,
         signIn,
         signOut,
         updateUser,

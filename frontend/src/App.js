@@ -3,6 +3,8 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 // Contextos
@@ -13,6 +15,8 @@ import DashboardLayout from './components/layouts/DashboardLayout';
 
 // Páginas
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Licitacoes from './pages/Licitacoes';
 import DetalhesLicitacao from './pages/DetalhesLicitacao';
@@ -35,60 +39,63 @@ const queryClient = new QueryClient({
   },
 });
 
-// Componente para rotas protegidas
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
 
-  // Mostra um indicador de carregamento enquanto verifica a autenticação
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
-
-  // Redireciona para o login se não estiver autenticado
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
-
-  // Renderiza o conteúdo protegido
-  return children;
+const PrivateRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
 // Componente principal da aplicação
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            {/* Rota pública */}
-            <Route path="/login" element={<Login />} />
-            
-            {/* Rotas protegidas */}
-            <Route 
-              path="/" 
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Dashboard />} />
-              <Route path="licitacoes" element={<Licitacoes />} />
-              <Route path="licitacoes/:id" element={<DetalhesLicitacao />} />
-              <Route path="fornecedores" element={<Fornecedores />} />
-              <Route path="fornecedores/:id" element={<DetalhesFornecedor />} />
-              <Route path="propostas" element={<Propostas />} />
-              <Route path="usuarios" element={<Usuarios />} />
-              <Route path="perfil" element={<Perfil />} />
-              <Route path="kanban" element={<KanbanBoard />} />
-            </Route>
-            
-            {/* Rota para página não encontrada */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router>
+            <Routes>
+              {/* Rota pública */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              
+              {/* Rotas protegidas */}
+              <Route 
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <DashboardLayout />
+                  </PrivateRoute>
+                }
+              >
+                <Route index element={<Dashboard />} />
+                <Route path="licitacoes" element={<Licitacoes />} />
+                <Route path="licitacoes/:id" element={<DetalhesLicitacao />} />
+                <Route path="fornecedores" element={<Fornecedores />} />
+                <Route path="fornecedores/:id" element={<DetalhesFornecedor />} />
+                <Route path="propostas" element={<Propostas />} />
+                <Route path="usuarios" element={<Usuarios />} />
+                <Route path="perfil" element={<Perfil />} />
+                <Route path="kanban" element={<KanbanBoard />} />
+              </Route>
+              
+              {/* Rota para página não encontrada */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
