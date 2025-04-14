@@ -112,3 +112,4 @@ Este projeto está licenciado sob a Licença Pública Geral GNU (GPL) - veja o a
 Para suporte técnico ou dúvidas sobre o sistema:
 - Email: suporte@licitagov.gov.br
 - Telefone: (XX) XXXX-XXXX
+# app
